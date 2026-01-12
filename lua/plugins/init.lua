@@ -25,6 +25,11 @@ return {
     "nvim-treesitter/nvim-treesitter",
     -- Use 'build' to ensure it runs when updated
     build = ":TSUpdate",
+
+    dependencies = {
+      "nvim-treesitter/nvim-treesitter-textobjects",
+    },
+
     opts = {
       install = { compilers = { "zig" } },
       ensure_installed = {
@@ -32,8 +37,38 @@ return {
         "javascript", "typescript", "python", "cpp", "markdown"
       },
       highlight = { enable = true },
+textobjects = {
+        select = {
+          enable = true,
+          lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
+          keymaps = {
+            -- You can use the capture groups defined in textobjects.scm
+            ["af"] = "@function.outer", -- Select around function
+            ["if"] = "@function.inner", -- Select inside function
+            ["ac"] = "@class.outer",    -- Select around class
+            ["ic"] = "@class.inner",    -- Select inside class
+            ["aa"] = "@parameter.outer", -- Select around argument
+            ["ia"] = "@parameter.inner", -- Select inside argument
+          },
+        },
+        move = {
+          enable = true,
+          set_jumps = true, -- whether to set jumps in the jumplist
+          goto_next_start = {
+            ["]f"] = "@function.outer", -- Jump to next function start
+            ["]c"] = "@class.outer",    -- Jump to next class start
+          },
+          goto_previous_start = {
+            ["[f"] = "@function.outer", -- Jump to prev function start
+            ["[c"] = "@class.outer",    -- Jump to prev class start
+          },
+        },
+      },
+
+
     },
-    config = function(_, opts)
+
+      config = function(_, opts)
       require("nvim-treesitter.configs").setup(opts)
       require("nvim-treesitter.install").compilers = { "zig" }
     end,
@@ -52,8 +87,18 @@ return {
     "lervag/vimtex",
     lazy = false,     -- We want this to load immediately to detect filetypes
     init = function()
-      -- Use a generic viewer or a specific one like SumatraPDF if you have it
       vim.g.vimtex_view_method = "general" 
     end
   },
+{
+  "stevearc/oil.nvim",
+  opts = {},
+  lazy = false,
+},
+{
+  "mfussenegger/nvim-dap",
+  config = function()
+    require "configs.dap" 
+  end,
+},
 }
