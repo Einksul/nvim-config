@@ -23,7 +23,6 @@ return {
   },
 {
     "nvim-treesitter/nvim-treesitter",
-    -- Use 'build' to ensure it runs when updated
     build = ":TSUpdate",
 
     dependencies = {

@@ -16,7 +16,7 @@ map("n", "<leader>cc", function()
   local output_path = vim.fn.expand("%:p:h") .. "\\" .. output_name
 
   local flags = "-Wall -Werror -g"
-  local cmd = string.format('cmd /c "cls && g++ %s "%s" -o "%s" && "%s""\r', flags, filepath, output_path, output_path)
+  local cmd = string.format('cmd /c "cls && g++ -std=c++20 %s "%s" -o "%s" && "%s""\r', flags, filepath, output_path, output_path)
 
   require("nvchad.term").runner { 
     cmd = cmd, 
