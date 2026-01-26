@@ -38,3 +38,80 @@ map("n", "<leader>du", function()
   local widgets = require("dap.ui.widgets")
   widgets.sidebar(widgets.scopes).toggle() 
 end, { desc = "DAP Debug UI (Scopes)" })
+
+-- SHARED HELPER: Generates the ID and Clean Text
+-- Returns: clean_text, clean_id
+local function get_id_info(text)
+  local clean_text = text:match("^%s*(.-)%s*$") -- Trim whitespace
+  -- Generate ID: lowercase -> replace spaces with dashes -> remove symbols
+  local clean_id = clean_text:gsub("%s+", "-"):gsub("[^%a%d%-]", ""):lower() .. "-def"
+  return clean_text, clean_id
+end
+
+-- ============================================================
+-- 1. DEFINE MAPPINGS (<leader>dq)
+-- Wraps text in <span id="...">...</span>
+-- ============================================================
+
+local function apply_def(text, is_visual)
+  local clean_text, clean_id = get_id_info(text)
+  local result = string.format('<span id="%s"><b><u>%s</u></b></span>', clean_id, clean_text)
+  
+  if is_visual then
+    vim.fn.setreg("d", result)
+    vim.cmd('normal! gv"dp')
+  else
+    vim.cmd('normal! "_diw')
+    vim.api.nvim_put({result}, "c", false, true)
+  end
+end
+
+map("v", "<leader>dq", function() 
+  vim.cmd('normal! gv"dy') -- Yank selection
+  apply_def(vim.fn.getreg("d"), true) 
+end, { desc = "Create Definition (Visual)" })
+
+map("n", "<leader>dq", function() 
+  apply_def(vim.fn.expand("<cword>"), false) 
+end, { desc = "Create Definition (Word)" })
+
+
+-- ============================================================
+-- 2. LINK MAPPINGS (<leader>dl)
+-- Checks if definition exists, then wraps in [text](#id)
+-- ============================================================
+
+local function apply_link(text, is_visual)
+  local clean_text, clean_id = get_id_info(text)
+  
+  -- Search for the ID in the file (n = do not move cursor, w = wrap around file)
+  -- We look for the exact string: id="clean_id"
+  local search_pattern = string.format('id="%s"', clean_id)
+  local found_line = vim.fn.search(search_pattern, "nw")
+  
+  if found_line > 0 then
+    -- Found! Create the link
+    local result = string.format('[%s](#%s)', clean_text, clean_id)
+    
+    if is_visual then
+      vim.fn.setreg("d", result)
+      vim.cmd('normal! gv"dp')
+    else
+      vim.cmd('normal! "_diw')
+      vim.api.nvim_put({result}, "c", false, true)
+    end
+    print("Linked to line " .. found_line)
+  else
+    -- Not found
+    print("No definition found for ID: " .. clean_id)
+  end
+end
+
+map("v", "<leader>dl", function() 
+  vim.cmd('normal! gv"dy') -- Yank selection
+  apply_link(vim.fn.getreg("d"), true) 
+end, { desc = "Link to Definition (Visual)" })
+
+map("n", "<leader>dl", function() 
+  apply_link(vim.fn.expand("<cword>"), false) 
+end, { desc = "Link to Definition (Word)" })
