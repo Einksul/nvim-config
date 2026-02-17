@@ -22,14 +22,7 @@ vim.lsp.config("clangd", {
     "--background-index",
     "--clang-tidy",
     "--header-insertion=iwyu",
-    "--query-driver=C:/Strawberry/c/bin/g*",
   },
-  init_options = {
-      fallbackFlags = {
-        "--target=x86_64-w64-mingw32",
-        "-std=c++20",
-      },
-    },
-  })
+})
 
 vim.lsp.enable("clangd")

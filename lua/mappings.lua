@@ -12,17 +12,17 @@ map("n", "<leader>cc", function()
   
   local filepath = vim.fn.expand("%:p")
   local name = vim.fn.expand("%:t:r")
-  local output_name = name .. ".exe" 
-  local output_path = vim.fn.expand("%:p:h") .. "\\" .. output_name
+  local output_name = name 
+  local output_path = vim.fn.expand("%:p:h") .. "/" .. output_name
 
   local flags = "-Wall -Werror -g"
-  local cmd = string.format('cmd /c "cls && g++ -std=c++20 %s "%s" -o "%s" && "%s""\r', flags, filepath, output_path, output_path)
+  local cmd = string.format('g++ -std=c++20 %s "%s" -o "%s" && "%s"', flags, filepath, output_path, output_path)
 
   require("nvchad.term").runner { 
     cmd = cmd, 
     id = "floatTerm", 
     pos = "float",
-    clear_cmd = " "
+    clear_cmd = "clear"
   }
 end, { desc = "compile c++ (float)" })
 

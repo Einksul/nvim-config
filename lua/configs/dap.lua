@@ -1,12 +1,13 @@
 local dap = require("dap")
-
-local mason_path = vim.fn.stdpath("data") .. "/mason/packages/codelldb/extension/adapter/codelldb.exe"
+local is_windows = vim.fn.has('win32') == 1
+local extension = is_windows and ".exe" or ""
 
 dap.adapters.codelldb = {
   type = "server",
   port = "${port}",
   executable = {
-    command = mason_path,
+    -- Append extension only if on Windows
+    command = vim.fn.stdpath("data") .. "/mason/packages/codelldb/extension/adapter/codelldb" .. extension,
     args = { "--port", "${port}" },
     detached = false,
   },
@@ -18,12 +19,15 @@ dap.configurations.cpp = {
     type = "codelldb",
     request = "launch",
     program = function()
-      return vim.fn.expand("%:p:r") .. ".exe"
+      -- Append extension only if on Windows
+      return vim.fn.expand("%:p:r") .. extension
     end,
     cwd = "${workspaceFolder}",
     stopOnEntry = false,
   },
 }
+
+
 
 vim.api.nvim_set_hl(0, 'DapBreakpoint', { ctermbg = 0, fg = '#ff0000' })
 vim.fn.sign_define('DapBreakpoint', { 

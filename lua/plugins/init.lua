@@ -7,9 +7,51 @@ return {
   },
 
   {
+    "williamboman/mason.nvim",
+    cmd = { "Mason", "MasonInstall", "MasonInstallAll", "MasonUpdate" },
+    opts = {
+      ensure_installed = {
+        "lua-language-server", "clangd", "codelldb", "pyright", 
+        "stylua", "prettier", "latexindent"
+      },
+    },
+    config = function(_, opts)
+      require("mason").setup(opts)
+      vim.api.nvim_create_user_command("MasonInstallAll", function()
+        vim.cmd("MasonInstall " .. table.concat(opts.ensure_installed, " "))
+      end, {})
+    end,
+  },
+
+  {
     "stevearc/conform.nvim",
     event = 'BufWritePre', 
     opts = require "configs.conform",
+  },
+
+  {
+    "vhyrro/luarocks.nvim",
+    priority = 1000,
+    config = true,
+  },
+  {
+    "3rd/image.nvim",
+    dependencies = { "luarocks.nvim" },
+    config = function()
+      require("image").setup({
+        backend = "kitty",
+        integrations = {
+          markdown = {
+            enabled = true,
+            clear_in_insert_mode = false,
+            download_remote_images = true,
+            only_render_image_at_cursor = false,
+            filetypes = { "markdown", "vimwiki" },
+          },
+        },
+        max_height_window_percentage = 50,
+      })
+    end
   },
 
   -- Markdown Rendering
@@ -19,57 +61,32 @@ return {
     dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
     opts = {
       latex = { enabled = true },
+      html = { enabled = true },
+      render_modes = { 'n', 'c', 'i', 'v', 'V' },
+      anti_conceal = { enabled = false },
     },
+    config = function(_, opts)
+        require("render-markdown").setup(opts)
+    end,
   },
 {
     "nvim-treesitter/nvim-treesitter",
+    lazy = false,
     build = ":TSUpdate",
 
     dependencies = {
       "nvim-treesitter/nvim-treesitter-textobjects",
     },
 
-    opts = {
-      install = { compilers = { "zig" } },
-      ensure_installed = {
-        "vim", "lua", "vimdoc", "html", "css", 
-        "javascript", "typescript", "python", "cpp", "markdown"
-      },
-      highlight = { enable = true },
-textobjects = {
-        select = {
-          enable = true,
-          lookahead = true, -- Automatically jump forward to textobj, similar to targets.vim
-          keymaps = {
-            -- You can use the capture groups defined in textobjects.scm
-            ["af"] = "@function.outer", -- Select around function
-            ["if"] = "@function.inner", -- Select inside function
-            ["ac"] = "@class.outer",    -- Select around class
-            ["ic"] = "@class.inner",    -- Select inside class
-            ["aa"] = "@parameter.outer", -- Select around argument
-            ["ia"] = "@parameter.inner", -- Select inside argument
-          },
+    config = function()
+      -- Setup Treesitter
+      require("nvim-treesitter.configs").setup({
+        ensure_installed = {
+          "vim", "lua", "vimdoc", "html", "css", 
+          "javascript", "typescript", "python", "cpp", "markdown", "markdown_inline", "regex", "latex"
         },
-        move = {
-          enable = true,
-          set_jumps = true, -- whether to set jumps in the jumplist
-          goto_next_start = {
-            ["]f"] = "@function.outer", -- Jump to next function start
-            ["]c"] = "@class.outer",    -- Jump to next class start
-          },
-          goto_previous_start = {
-            ["[f"] = "@function.outer", -- Jump to prev function start
-            ["[c"] = "@class.outer",    -- Jump to prev class start
-          },
-        },
-      },
-
-
-    },
-
-      config = function(_, opts)
-      require("nvim-treesitter.configs").setup(opts)
-      require("nvim-treesitter.install").compilers = { "zig" }
+        highlight = { enable = true },
+      })
     end,
   },
 {
