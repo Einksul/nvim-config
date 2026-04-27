@@ -115,3 +115,21 @@ end, { desc = "Link to Definition (Visual)" })
 map("n", "<leader>dl", function() 
   apply_link(vim.fn.expand("<cword>"), false) 
 end, { desc = "Link to Definition (Word)" })
+
+-- Neo-tree and CSV View mappings
+map("n", "<C-n>", "<cmd>Neotree toggle<CR>", { desc = "Toggle Neo-tree" })
+map("n", "<leader>nt", "<cmd>Neotree toggle<CR>", { desc = "Neo-tree Toggle" })
+map("n", "<leader>ng", "<cmd>Neotree float git_status<CR>", { desc = "Neo-tree Git Status" })
+map("n", "<leader>ns", "<cmd>Neotree float document_symbols<CR>", { desc = "Neo-tree Document Symbols" })
+map("n", "<leader>cv", "<cmd>CsvViewToggle display_mode=border header_lnum=1<CR>", { desc = "Toggle CSV View" })
+
+map("n", "<leader>vp", function()
+  local file = vim.api.nvim_buf_get_name(0)
+  if file ~= "" then
+    local cmd = string.format("TERM=xterm-256color CACA_DRIVER=ncurses mpv --vo=tct --really-quiet \"%s\"", file)
+    require("snacks").terminal.open(cmd, {
+      win = { position = "float" },
+    })
+  end
+end, { desc = "Play Video in Float (mpv terminal)" })
+
