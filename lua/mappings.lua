@@ -155,3 +155,11 @@ map("n", "<leader>pz", function()
   end
 end, { desc = "Open PDF in Zathura" })
 
+-- VimTeX Mappings
+map("n", "<leader>ll", "<cmd>VimtexCompile<cr>", { desc = "VimTeX Compile" })
+map("n", "<leader>lv", "<cmd>VimtexView<cr>", { desc = "VimTeX View PDF" })
+map("n", "<leader>lk", "<cmd>VimtexStop<cr>", { desc = "VimTeX Stop Compilation" })
+map("n", "<leader>lc", "<cmd>VimtexClean<cr>", { desc = "VimTeX Clean Aux Files" })
+map("n", "<leader>le", "<cmd>VimtexErrors<cr>", { desc = "VimTeX Show Errors" })
+map("n", "<leader>lt", "<cmd>VimtexTocOpen<cr>", { desc = "VimTeX Open TOC" })
+

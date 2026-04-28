@@ -37,7 +37,15 @@ return {
       image = {
         enabled = true,
         doc = {
-          inline = true, -- render images inline in markdown etc.
+          inline = false, -- Try disabling inline to see if it improves float behavior
+          float = true,   -- Explicitly enable floats if supported
+          max_width = 50,
+          max_height = 20,
+        },
+        math = {
+          enabled = true,
+          typst = true,
+          scale = 1.5, -- Increase scale for better visibility in floats
         },
       },
       terminal = {
@@ -66,9 +74,10 @@ return {
   -- Markdown Rendering
   {
     "MeanderingProgrammer/render-markdown.nvim",
-    ft = { "markdown" },
+    ft = { "markdown", "tex" },
     dependencies = { "nvim-treesitter/nvim-treesitter", "nvim-tree/nvim-web-devicons" },
     opts = {
+      file_types = { "markdown", "tex" },
       latex = { enabled = true },
       html = { enabled = true },
       render_modes = { 'n', 'c', 'i', 'v', 'V' },

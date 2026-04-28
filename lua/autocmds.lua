@@ -17,3 +17,11 @@ autocmd("FileType", {
     map("n", "q", "<cmd>PDFReader q<CR>", opts)
   end,
 })
+
+-- Enable rendering for LaTeX files by setting conceallevel
+autocmd("FileType", {
+  pattern = "tex",
+  callback = function()
+    vim.opt_local.conceallevel = 2
+  end,
+})
