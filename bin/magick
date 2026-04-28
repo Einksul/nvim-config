@@ -1,1 +1,12 @@
-/usr/bin/convert
+#!/usr/bin/env bash
+# Wrapper script to make ImageMagick 6 behave like ImageMagick 7's "magick" command.
+case "$1" in
+    identify|convert|mogrify|composite|compare|animate|display|import|montage|stream)
+        cmd="$1"
+        shift
+        exec "$cmd" "$@"
+        ;;
+    *)
+        exec convert "$@"
+        ;;
+esac

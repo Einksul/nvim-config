@@ -133,3 +133,25 @@ map("n", "<leader>vp", function()
   end
 end, { desc = "Play Video in Float (mpv terminal)" })
 
+map("n", "<leader>pp", function()
+  local file = vim.api.nvim_buf_get_name(0)
+  if file ~= "" and file:match("%.pdf$") then
+    local cmd = string.format("pdftotext -layout -nopgbrk \"%s\" - | less", file)
+    require("snacks").terminal.open(cmd, {
+      win = { position = "float" },
+    })
+  else
+    vim.notify("Not a PDF file", vim.log.levels.WARN)
+  end
+end, { desc = "Preview PDF in Terminal" })
+
+map("n", "<leader>pz", function()
+  local file = vim.api.nvim_buf_get_name(0)
+  if file ~= "" and file:match("%.pdf$") then
+    vim.fn.jobstart({"zathura", file}, {detach = true})
+    vim.notify("Opening in Zathura: " .. vim.fn.fnamemodify(file, ":t"))
+  else
+    vim.notify("Not a PDF file", vim.log.levels.WARN)
+  end
+end, { desc = "Open PDF in Zathura" })
+

@@ -53,6 +53,16 @@ return {
     end,
   },
 
+  -- PDF Reader integration with snacks.nvim
+  {
+    "r-pletnev/pdfreader.nvim",
+    lazy = false,
+    dependencies = { "folke/snacks.nvim", "nvim-telescope/telescope.nvim" },
+    config = function()
+      require("pdfreader").setup()
+    end,
+  },
+
   -- Markdown Rendering
   {
     "MeanderingProgrammer/render-markdown.nvim",
@@ -102,7 +112,7 @@ return {
     "lervag/vimtex",
     lazy = false,     -- We want this to load immediately to detect filetypes
     init = function()
-      vim.g.vimtex_view_method = "general" 
+      vim.g.vimtex_view_method = "zathura" 
     end
   },
 {
@@ -155,6 +165,31 @@ return {
             require("snacks").terminal.open(cmd, {
               win = { position = "float" },
             })
+          end,
+          ["P"] = function(state)
+            local node = state.tree:get_node()
+            local path = node:get_id()
+            -- pdftotext with page separators for easier navigation in less
+            local cmd = string.format("pdftotext -layout -nopgbrk \"%s\" - | less", path)
+            require("snacks").terminal.open(cmd, {
+              win = { position = "float" },
+            })
+          end,
+          ["Z"] = function(state)
+            local node = state.tree:get_node()
+            local path = node:get_id()
+            vim.fn.jobstart({"zathura", path}, {detach = true})
+            vim.notify("Opening in Zathura: " .. vim.fn.fnamemodify(path, ":t"))
+          end,
+          ["<cr>"] = function(state)
+            local node = state.tree:get_node()
+            if node.type == "file" and node.ext == "pdf" then
+              vim.cmd("edit " .. node:get_id())
+              -- Ensure we are in the buffer
+              vim.cmd("wincmd l") 
+            else
+              state.commands["open"](state)
+            end
           end,
           ["Y"] = function(state)
             local node = state.tree:get_node()
