@@ -102,7 +102,6 @@ local function apply_link(text, is_visual)
     end
     print("Linked to line " .. found_line)
   else
-    -- Not found
     print("No definition found for ID: " .. clean_id)
   end
 end
